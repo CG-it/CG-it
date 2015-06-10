@@ -1,0 +1,62 @@
+RESI HEPT           0.00 ! C7H16 heptane
+GROUP
+ATOM  H11 HAL3      0.09 !    H2
+ATOM  H12 HAL3      0.09 !     |
+ATOM  H13 HAL3      0.09 ! H1-C1-H3
+ATOM  C1  CTL3     -0.27 !     |
+GROUP                    !     |
+ATOM  H21 HAL2      0.09 ! H4-C2-H5
+ATOM  H22 HAL2      0.09 !     |
+ATOM  C2  CTL2     -0.18 !     |
+GROUP                    !     |
+ATOM  H31 HAL2      0.09 ! H6-C3-H7
+ATOM  H32 HAL2      0.09 !     |
+ATOM  C3  CTL2     -0.18 !     |
+GROUP                    !     |
+ATOM  H41 HAL2      0.09 ! H8-C4-H10
+ATOM  H42 HAL2      0.09 !     |
+ATOM  C4  CTL2     -0.18 !     |
+GROUP                    !     |
+ATOM  H51 HAL2      0.09 ! H51-C5-H152
+ATOM  H52 HAL2      0.09 !     |
+ATOM  C5  CTL2     -0.18 !     |
+GROUP                    !     |
+ATOM  H61 HAL2      0.09 ! H61-C4-H62
+ATOM  H62 HAL2      0.09 !     |
+ATOM  C6  CTL2     -0.18 !     |
+GROUP                    !     |
+ATOM  H71 HAL3      0.09 ! H71-C4-H72
+ATOM  H72 HAL3      0.09 !     |
+ATOM  H73 HAL3      0.09 !    H73
+ATOM  C7  CTL3     -0.27 !
+
+BOND H11 C1  H12 C1  H13 C1  C1 C2
+BOND H21 C2  H22 C2  C2  C3
+BOND H31 C3  H32 C3  C3  C4
+BOND H41 C4  H42 C4  C4  C5
+BOND H51 C5  H52 C5  C5  C6
+BOND H61 C6  H62 C6  C6  C7
+BOND H71 C7  H72 C7  H73 C7
+
+IC  C1  C2  C3  C4  0.00  0.00  180.0   0.00 0.00
+IC  C2  C3  C4  C5  0.00  0.00  180.0   0.00 0.00
+IC  C3  C4  C5  C6  0.00  0.00  180.0   0.00 0.00
+IC  C4  C5  C6  C7  0.00  0.00  180.0   0.00 0.00
+IC  C3  C2  C1  H11 0.00  0.00  180.0   0.00 0.00
+IC  H11 C2 *C1  H12 0.00  0.00  120.0   0.00 0.00
+IC  H11 C2 *C1  H13 0.00  0.00  240.0   0.00 0.00
+IC  C1  C3 *C2  H21 0.00  0.00  120.0   0.00 0.00
+IC  C1  C3 *C2  H22 0.00  0.00  240.0   0.00 0.00
+IC  C2  C4 *C3  H31 0.00  0.00  120.0   0.00 0.00
+IC  C2  C4 *C3  H32 0.00  0.00  240.0   0.00 0.00
+IC  C3  C5 *C4  H41 0.00  0.00  120.0   0.00 0.00
+IC  C3  C5 *C4  H42 0.00  0.00  240.0   0.00 0.00
+IC  C4  C6 *C5  H51 0.00  0.00  120.0   0.00 0.00
+IC  C4  C6 *C5  H52 0.00  0.00  240.0   0.00 0.00
+IC  C4  C5  C6  H61 0.00  0.00  180.0   0.00 0.00
+IC  H61 C5 *C6  H62 0.00  0.00  120.0   0.00 0.00
+IC  C5  C6  C7  H71 0.00  0.00  180.0   0.00 0.00
+IC  H71 C6 *C7  H62 0.00  0.00  240.0   0.00 0.00
+IC  H71 C6 *C7  H63 0.00  0.00  240.0   0.00 0.00
+
+

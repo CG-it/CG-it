@@ -1,0 +1,38 @@
+# -*- conf -*-
+
+echo both
+
+units           real
+
+#package         gpu force/neigh 0 1 -1
+#newton          off
+
+neighbor        2.5 bin
+neigh_modify    delay 4 every 2 check yes
+
+processors       * * 1 grid numa
+
+atom_style      full
+#read_data       popc-water.data
+read_restart    popc-water.min.state
+include         popc-water.param
+
+reset_timestep  0
+
+kspace_style    pppm/cg 1.0e-5
+kspace_modify   order 3
+
+velocity        all create 303.0 1234 mom yes rot yes dist gaussian
+
+fix             mynpt all npt temp 303.0 303.0 400.0 iso 1.0 1.0 1000.0 #drag .01
+
+dump            main all dcd 1000 popc-water.eq.dcd
+dump_modify     main unwrap yes
+
+timestep        10.0
+
+thermo          100
+
+run             5000000 
+
+write_restart   popc-water.eq.state

@@ -1,0 +1,17 @@
+echo both
+
+neighbor        2.5 bin
+neigh_modify    every 2 delay 0 check yes
+
+units           real
+
+atom_style      full
+read_data       popc-solvate.data 
+
+include         popc-solvate.param 
+
+kspace_style    pppm 1.0e-5
+
+minimize        1.0e-4 1.0e-6 300 1000
+
+write_restart   popc-solvate.min.state

@@ -1,0 +1,29 @@
+# Packmol input file
+# http://www.ime.unicamp.br/~martinez/packmol/
+# A mixture of water and POPC 
+
+## packmol < popc-water.pckmol 
+
+# All the atoms from diferent molecules will be separated at least 2.0
+# Anstroms at the solution.
+
+tolerance 2.0
+
+# The file type of input and output files is PDB
+
+filetype pdb
+
+# The name of the output file
+
+output popc-water.pdb
+
+structure water.pdb 
+  number 800 
+  inside box 0. 0. 0. 40. 40. 40. 
+end structure
+
+structure popc-monomer.pdb
+  number 20
+  inside box 0. 0. 0. 40. 40. 40. 
+end structure
+

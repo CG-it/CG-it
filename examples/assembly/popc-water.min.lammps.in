@@ -1,0 +1,19 @@
+echo both
+
+#package         gpu force/neigh 0 0 -1
+#newton          off
+
+neighbor        2.5 bin
+neigh_modify    every 2 delay 0 check yes
+
+units           real
+
+atom_style      full
+read_data       popc-water.data 
+include         popc-water.param 
+
+kspace_style    pppm 1.0e-5
+
+minimize        1.0e-4 1.0e-6 300 1000
+
+write_restart   popc-water.min.state

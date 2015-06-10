@@ -1,0 +1,16 @@
+# Wildcards
+#*chol*                   export-ignore
+#*clol*                   export-ignore
+
+# Files
+.gitattributes           export-ignore
+.gitignore               export-ignore
+ictools.tcl              export-ignore
+
+# Directories
+legacy                   export-ignore
+free_energy              export-ignore
+examples                 export-ignore
+charmm                   export-ignore
+parameterization         export-ignore
+#cgmap                    export-ignore

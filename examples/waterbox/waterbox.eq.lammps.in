@@ -1,0 +1,37 @@
+# -*- conf -*-
+
+echo both
+
+units           real
+
+#package         gpu force/neigh 0 0 -1
+#newton          off
+
+neighbor        2.5 bin
+neigh_modify    delay 4 every 2 check yes
+
+processors       * * * grid numa 
+
+atom_style      full
+read_restart    waterbox-cg.min.state
+include         waterbox-cg.param 
+
+reset_timestep  0
+
+#kspace_style    pppm/cg 1.0e-5
+#kspace_modify   order 3
+
+velocity all create 303.0 11111111 mom yes rot yes dist gaussian
+
+fix             mynpt all npt temp 303.0 303.0 400.0 iso 1.0 1.0 1000.0 #drag .01
+
+dump            main all dcd 10 waterbox-cg.eq.dcd
+dump_modify     main unwrap yes
+
+timestep        10.0
+
+thermo           10
+
+run              100
+
+write_restart   waterbox-cg.eq.state

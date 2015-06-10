@@ -1,0 +1,126 @@
+# -*- tcl -*-
+# molecular dynamics
+
+set mol_name            waterbox
+set run                 [file rootname [file tail [info script]]]
+if { ${run} == "eq300" } {
+    set run                 ${mol_name}.${run}
+} else {
+    set run                 ${run}
+}
+set old                 ""
+if { [info exists env(old)] > 0 } {
+set old                 $env(old)
+}
+for { set ijob 0 } { ${ijob} < 10 } { incr ijob } {
+    set job [format "%s.%04d" ${run} ${ijob}]
+    if { [file exists "${job}.colvars.state"] == 0 } {
+        # this job was not run yet
+        break
+    }
+    set old ${job}
+}
+
+# input
+
+# physical description 
+paraTypeCharmm          on
+structure               ${mol_name}.psf
+parameters              par_water_ions.prm
+#parameters              par_all36_prot.prm
+#parameters              par_all36_lipid.prm
+1-4scaling              1.0
+exclude                 scaled1-4
+rigidBonds              all
+useSettle               on
+
+# cutoffs and approximations
+switchdist              10.0
+cutoff                  12.0
+pairlistdist            13.0
+stepspercycle           20
+margin                  2.0
+PME                     yes
+PMEGridSizeX            80
+PMEGridSizeY            80
+PMEGridSizeZ            80
+FFTWUseWisdom           yes
+FFTWWisdomFile          .fftw_wisdom.txt
+
+# initial data and boundary conditions
+coordinates             ${mol_name}.pdb
+if { ${ijob} > 0 } {
+binCoordinates          ${old}.coor
+binVelocities           ${old}.vel
+extendedSystem          ${old}.xsc
+} else {
+binCoordinates          ${mol_name}.min.coor
+seed                    87654321
+temperature             300.0
+extendedSystem          ${mol_name}.xsc
+}
+COMmotion               no
+zeroMomentum            yes
+#wrapAll                 yes
+wrapWater               yes
+
+
+# thermodynamic ensemble options
+#useFlexibleCell         yes
+#useConstantRatio        yes
+
+# NAMD per-atom Langevin temperature coupling
+langevin                on
+langevinTemp            300.0
+langevinDamping         10.0            
+
+# NAMD Langevin pressure coupling
+useGroupPressure        on
+LangevinPiston          on
+LangevinPistonTarget    1.0
+LangevinPistonPeriod    200.0
+LangevinPistonDecay     100.0
+LangevinPistonTemp      300.0
+
+
+# simulation type
+timestep                2.0
+#minimization            on
+if { [info exists env(numsteps)] > 0 } {
+numsteps                $env(numsteps)
+} else {
+numsteps                50000000 # 100 ns
+}
+# collective variables configuration
+if { [file exists "${run}.colvars.in"] > 0 } {
+colvars                 on
+colvarsConfig           ${run}.colvars.in
+if { ${ijob} > 0 } {
+colvarsInput            ${old}.colvars.state
+}
+}
+
+
+# output
+
+# main output and restarts
+outputName              ${job}
+binaryOutput            yes
+restartName             ${job}
+binaryRestart           yes
+restartFreq             10000
+
+# trajectory output
+DCDfile                 ${job}.coor.dcd
+DCDfreq                 2000
+DCDUnitCell             yes
+XSTfile                 ${job}.xst
+XSTfreq                 2000
+
+# standard output frequencies
+outputEnergies          2000
+outputMomenta           2000
+outputPressure          2000
+outputTiming            2000
+
+

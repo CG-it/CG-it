@@ -1,0 +1,10 @@
+# Wildcards
+#*chol*                   export-ignore
+#*clol*                   export-ignore
+
+# Files
+.gitattributes           export-ignore
+.gitignore               export-ignore
+Makefile                 export-ignore
+
+# Directories

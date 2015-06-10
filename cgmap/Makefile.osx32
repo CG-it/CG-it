@@ -1,0 +1,33 @@
+## This is what you want for OSX based VMD
+
+ROOT=         cgmap
+VERSION=      1.0
+
+EXE=          lib$(ROOT).so
+SRC =         cgmap.cpp
+OBJ =         $(SRC:.cpp=.o)
+
+CC=           clang++
+CCFLAGS=      -Os -Wall -W -Wno-uninitialized -dynamic -m32
+SHFLAGS=      -fPIC
+
+LIB=          -lstdc++ -lm -m32
+SHLIBFLAGS=   -bundle
+
+TCL_INC=      -I/usr/include  
+TCL_STUB_LIB= -ltclstub8.5
+
+
+CGMAP_INC = -DPACKAGE_NAME=\"$(ROOT)\" -DPACKAGE_VERSION=\"$(VERSION)\"\
+	            -DUSE_TCL_STUBS
+
+include Makefile.base
+
+all: shlib 
+
+clean:
+	rm *.o *.so
+
+install:
+	mkdir -p $(PLUGINDIR)/cgtools$(VERSION) && \
+		rsync -av cgmap.so $(PLUGINDIR)/cgtools$(VERSION)/.

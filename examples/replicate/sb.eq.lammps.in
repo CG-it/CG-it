@@ -1,0 +1,32 @@
+# -*- conf -*-
+
+echo both
+
+units           real
+
+neighbor        2.5 bin
+neigh_modify    delay 4 every 2 check yes
+
+processors       * * 1
+
+atom_style      full
+#read_data       lb-cg.data 
+read_restart    lb-cg.min.state
+include         lb-cg.param 
+
+reset_timestep  0
+
+kspace_style    pppm/cg 1.0e-5
+kspace_modify   order 3
+
+velocity        all create 303.0 11111111 mom yes rot yes dist gaussian
+
+fix             mynpt all npt temp 303 303 100.0 &
+                x 1.0 1.0 1000.0 y 1.0 1.0 1000.0 z 1.0 1.0 1000.0 &
+                couple xy
+
+timestep        10.0
+
+thermo          10
+
+run             1000
