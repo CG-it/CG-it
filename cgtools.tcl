@@ -82,7 +82,7 @@ proc CGtools::title {} {
 
     variable version
 
-    cgCon -info "CGTOOLS Version $version    "
+    cgCon -info "CG-it Version $version    "
     cgCon -info "Loading from: [info script] "
     cgCon -info "Please Cite:                "
 
@@ -423,9 +423,9 @@ proc CGtools::CGtools { args } {
 proc CGtools::cgCon {flag str} {
     switch -- $flag {
         "-error" -
-        "-err"  { vmdcon -err  "CGTOOLS> $str" }
-        "-warn" { vmdcon -warn "CGTOOLS> $str" }
-        "-info" { vmdcon -info "CGTOOLS> $str" }
+        "-err"  { vmdcon -err  "CG> $str" }
+        "-warn" { vmdcon -warn "CG> $str" }
+        "-info" { vmdcon -info "CG> $str" }
         default { vmdcon $str}
     }
 }
