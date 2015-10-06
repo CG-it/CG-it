@@ -1,10 +1,10 @@
 #!/usr/bin/tclsh
 
-# +----------+
-# | CG-Tools |
-# +----------+
+# +-------+
+# | CG-it |
+# +-------+
 
-# CGtools, a VMD package to simplify creating coarse grained SDK
+# CG-it, a VMD package to simplify creating coarse grained SDK
 # topologies.
 
 # Copyright (c) 2013 by Chris MacDermaid <chris.macdermaid@gmail.com>
@@ -17,7 +17,7 @@
 # | just a wraper for topo writelammpsdata and animate write |
 # +----------------------------------------------------------+
 
-proc CGtools::writelammpsdata {molid fname {style full}} {
+proc CGit::writelammpsdata {molid fname {style full}} {
     topo -molid $molid writelammpsdata $fname $style
 }
 
@@ -25,7 +25,7 @@ proc CGtools::writelammpsdata {molid fname {style full}} {
 # | Write out a lammps formatted parameter file |
 # +---------------------------------------------+
 
-proc CGtools::writelammpsparam {molid fname {flag none} {guess 0}} {
+proc CGit::writelammpsparam {molid fname {flag none} {guess 0}} {
 
     variable params
 
@@ -282,7 +282,7 @@ proc CGtools::writelammpsparam {molid fname {flag none} {guess 0}} {
     return -code ok
 }
 
-proc CGtools::lammps_preamble {fid {flag none}} {
+proc CGit::lammps_preamble {fid {flag none}} {
 
     ## Useful style configurations
 
@@ -327,7 +327,7 @@ proc CGtools::lammps_preamble {fid {flag none}} {
 
 
 ## Write out a csv for the vdW interaction table
-proc CGtools::writecsv {types} {
+proc CGit::writecsv {types} {
 
     set fid [open types.csv "w"]
 

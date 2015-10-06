@@ -1,8 +1,8 @@
-# +----------+
-# | CG-Tools |
-# +----------+
+# +-------+
+# | CG-it |
+# +-------+
 
-# CGtools, a VMD package to simplify creating Coarse Grained SDK 
+# CG-it, a VMD package to simplify creating Coarse Grained SDK 
 # topologies.
 
 # Copyright (c) 2013 by Chris MacDermaid <chris.macdermaid@gmail.com>
@@ -12,7 +12,7 @@
 #(DeVane) Shinoda, DeVane, Klein, Soft Matter, 4, 2453-2462 (2008).
 
 ## Solvate a selection in a waterbox with user specified padding
-proc ::CGtools::solvate_pad {sel {pad 10} {r 3.0} {waterbox default}} {
+proc ::CGit::solvate_pad {sel {pad 10} {r 3.0} {waterbox default}} {
 
     variable datadir
     set molid [$sel molid]
@@ -105,7 +105,7 @@ proc ::CGtools::solvate_pad {sel {pad 10} {r 3.0} {waterbox default}} {
 }
 
 ## Fill the box based on the PBC dimensions from the solute molecule
-proc ::CGtools::solvate_box {sel {r 3.0} {waterbox default}} {
+proc ::CGit::solvate_box {sel {r 3.0} {waterbox default}} {
 
     variable datadir
     set molid [$sel molid]

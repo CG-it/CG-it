@@ -1,8 +1,8 @@
-# +----------+
-# | CG-Tools |
-# +----------+
+# +-------+
+# | CG-it |
+# +-------+
 
-# CGtools, a VMD package to simplify creating Coarse Grained SDK
+# CG-it, a VMD package to simplify creating Coarse Grained SDK
 # topologies.
 
 # Copyright (c) 2013 by Chris MacDermaid <chris.macdermaid@gmail.com>
@@ -12,7 +12,7 @@
 #(DeVane) Shinoda, DeVane, Klein, Soft Matter, 4, 2453-2462 (2008).
 
 ## Read param wrapper based on provided or guessed filetype
-proc CGtools::readParam {filename {type guess}} {
+proc CGit::readParam {filename {type guess}} {
 
     cgCon -info "Reading parameters from $filename"
 
@@ -32,7 +32,7 @@ proc CGtools::readParam {filename {type guess}} {
 }
 
 ## Reads a json-formatted parameter file
-proc CGtools::readParamJSON {filename} {
+proc CGit::readParamJSON {filename} {
 
     set fftype ""
     set ffparams ""
@@ -69,7 +69,7 @@ proc CGtools::readParamJSON {filename} {
 }
 
 ## Reads the SDK-json formatted parameter file
-proc CGtools::readParamSDK {data} {
+proc CGit::readParamSDK {data} {
 
     variable params
 
@@ -108,7 +108,7 @@ proc CGtools::readParamSDK {data} {
 # specified, topotools is used to guess those.
 #
 # \note This command must be run before outputting lammps data/parameter files
-proc CGtools::reanalyze_mol { args } {
+proc CGit::reanalyze_mol { args } {
 
     variable topologies
     variable sys
@@ -195,7 +195,7 @@ proc CGtools::reanalyze_mol { args } {
 # | Apply topologies read in from the maps to the selected molecules |
 # +------------------------------------------------------------------+
 
-proc CGtools::set_bonds { args } {
+proc CGit::set_bonds { args } {
 
     variable map
     variable sys
@@ -246,7 +246,7 @@ proc CGtools::set_bonds { args } {
     return -code ok $sys(OK)
 }
 
-proc CGtools::set_angles { args } {
+proc CGit::set_angles { args } {
 
     variable map
     variable sys
@@ -332,7 +332,7 @@ proc CGtools::set_angles { args } {
     return -code ok $sys(OK)
 }
 
-proc CGtools::set_dihedrals { args } {
+proc CGit::set_dihedrals { args } {
 
     variable map
     variable sys
@@ -422,7 +422,7 @@ proc CGtools::set_dihedrals { args } {
 }
 
 ## Print out a nice formatted database of values in plain-text
-proc CGtools::printParam {{fname {stdout}}} {
+proc CGit::printParam {{fname {stdout}}} {
 
     variable sys
     variable params
@@ -469,7 +469,7 @@ proc CGtools::printParam {{fname {stdout}}} {
 # dict with params {}
 # puts $potential ->> returns looked up potential
 
-proc CGtools::getParam {args} {
+proc CGit::getParam {args} {
 
     variable params
 
@@ -616,7 +616,7 @@ proc CGtools::getParam {args} {
 }
 
 ## Generate pair parameters via selected combination rules
-proc CGtools::pairCombine {atype1 atype2 {rule geometric}} {
+proc CGit::pairCombine {atype1 atype2 {rule geometric}} {
 
     set retval {}
 
@@ -671,7 +671,7 @@ proc CGtools::pairCombine {atype1 atype2 {rule geometric}} {
 }
 
 ## Read param wrapper based on provided or guessed filetype
-proc CGtools::readTopo {filename {type guess}} {
+proc CGit::readTopo {filename {type guess}} {
 
     cgCon -info "Reading topologies from $filename"
 
@@ -689,7 +689,7 @@ proc CGtools::readTopo {filename {type guess}} {
 }
 
 ## Reads a json-formatted parameter file
-proc CGtools::readTopoJSON {filename} {
+proc CGit::readTopoJSON {filename} {
 
     variable map
 
@@ -732,7 +732,7 @@ proc CGtools::readTopoJSON {filename} {
 ## Utility to get map properties at the coast of some
 ## overhead for parsing the flags and transposing
 ## if necessary
-proc ::CGtools::getMap {args} {
+proc ::CGit::getMap {args} {
 
     variable map
 
@@ -793,7 +793,7 @@ proc ::CGtools::getMap {args} {
 
 
 ## lsearch hack to transpose matrix
-proc ::CGtools::transpose {matrix} {
+proc ::CGit::transpose {matrix} {
     set res {}
     for {set index 0} {$index < [llength [lindex $matrix 0]]} {incr index} {
         if {[catch {lsearch -all -inline -subindices\
@@ -810,7 +810,7 @@ proc ::CGtools::transpose {matrix} {
 ## this method wins out by a few microseconds per iteration
 ## than the lsearch transpose hack above, but this lacks implicit
 ## error handling...
-proc ::CGtools::transpose2 {matrix} {
+proc ::CGit::transpose2 {matrix} {
     set res {}
     for {set j 0} {$j < [llength [lindex $matrix 0]]} {incr j} {
         set newrow {}
@@ -827,7 +827,7 @@ proc ::CGtools::transpose2 {matrix} {
 # | Cleanup Everything |
 # +--------------------+
 
-proc CGtools::reset {} {
+proc CGit::reset {} {
     ## Clear everything
     clear all
 }
@@ -836,7 +836,7 @@ proc CGtools::reset {} {
 # |  Clear Everything  |
 # +--------------------+
 
-proc CGtools::clear {{flag all}} {
+proc CGit::clear {{flag all}} {
 
     variable map
     variable params

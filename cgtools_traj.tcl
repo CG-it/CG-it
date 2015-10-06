@@ -1,10 +1,10 @@
 #!/usr/bin/tclsh
 
-# +----------+
-# | CG-Tools |
-# +----------+
+# +-------+
+# | CG-it |
+# +-------+
 
-# CGtools, a VMD package to simplify creating coarse grained SDK
+# CG-it, a VMD package to simplify creating coarse grained SDK
 # topologies.
 
 # Copyright (c) 2013 by Chris MacDermaid <chris.macdermaid@gmail.com>
@@ -19,7 +19,7 @@
 # | a-b-c-d), arr(imprp a-b-c-d)                                         |
 # +----------------------------------------------------------------------+
 
-proc ::CGtools::traj_analyze {sel {start 0} {end -1} {flags {bonds angles}} } {
+proc ::CGit::traj_analyze {sel {start 0} {end -1} {flags {bonds angles}} } {
 
     variable sys
 
@@ -93,7 +93,7 @@ proc ::CGtools::traj_analyze {sel {start 0} {end -1} {flags {bonds angles}} } {
     return $sys(OK)
 }
 
-proc ::CGtools::traj_analyze_print {arr} {
+proc ::CGit::traj_analyze_print {arr} {
 
     variable sys
 
@@ -128,7 +128,7 @@ proc ::CGtools::traj_analyze_print {arr} {
     return $sys(OK)
 }
 
-proc ::CGtools::traj_density {molid {start 0} {end -1} {stride 1}} {
+proc ::CGit::traj_density {molid {start 0} {end -1} {stride 1}} {
 
     set nframes [molinfo $molid get numframes]
     if {$end == -1} {set end [expr {$nframes - 1}]}

@@ -1,7 +1,7 @@
 ## Legacy Routines for reading/writing/getting topology and parameter
 ## data
 
-namespace eval ::CGtools::Legacy {
+namespace eval ::CGit::Legacy {
     namespace export Legacy
 }
 
@@ -31,7 +31,7 @@ namespace eval ::CGtools::Legacy {
 #
 #\note Topology files have been depreciated in favor of "map" files.
 #\note but we continue their support for the time being
-proc CGtools::Legacy::readTop {infile {arr null}} {
+proc CGit::Legacy::readTop {infile {arr null}} {
 
     variable sys
     upvar $arr topo
@@ -118,7 +118,7 @@ proc CGtools::Legacy::readTop {infile {arr null}} {
 # angle atom_type_1 atom_type_2 atom_type_3 K (kcal/radian**2) theta_0 (degrees)
 # pair  atom_type_1 atom_type_2 lj9_6/lj9_12 epsilon (kcal/mol) sigma (angstrom)
 #
-proc CGtools::Legacy::readParam { args } {
+proc CGit::Legacy::readParam { args } {
 
     variable params
     variable sys
@@ -224,7 +224,7 @@ proc CGtools::Legacy::readParam { args } {
 ## Based on the current molecular connectivity,
 ## write out bond, angle, dihedral fields in the
 ## legacy sdk format.
-proc CGtools::Legacy::writeSDKtopo {sel {fname stdout} {renumber 1}} {
+proc CGit::Legacy::writeSDKtopo {sel {fname stdout} {renumber 1}} {
 
     variable sys
 
@@ -342,7 +342,7 @@ proc CGtools::Legacy::writeSDKtopo {sel {fname stdout} {renumber 1}} {
     return -code ok $sys(OK)
 }
 
-proc CGtools::Legacy::setParam args {
+proc CGit::Legacy::setParam args {
 
     variable sys
     variable params
@@ -464,7 +464,7 @@ proc CGtools::Legacy::setParam args {
     return -code ok
 }
 
-proc CGtools::Legacy::deleteParam rgs {
+proc CGit::Legacy::deleteParam rgs {
 
     variable sys
     variable params
@@ -568,7 +568,7 @@ proc CGtools::Legacy::deleteParam rgs {
 
 }
 
-proc CGtools::Legacy::getParam args {
+proc CGit::Legacy::getParam args {
 
     variable sys
     variable params
@@ -684,7 +684,7 @@ proc CGtools::Legacy::getParam args {
 }
 
 ## Generate pair parameters via selected combination rules
-proc CGtools::Legacy::param_pair_combine {rule atype1 atype2} {
+proc CGit::Legacy::param_pair_combine {rule atype1 atype2} {
 
     lassign [get_param pair $atype1 $atype1] key1 nbparams1
     lassign [get_param pair $atype2 $atype2] key2 nbparams2
@@ -725,7 +725,7 @@ proc CGtools::Legacy::param_pair_combine {rule atype1 atype2} {
 
 ## Given a topology array, convert to map format
 ## Do this transparently when the user reads a legacy top file
-proc CGtools::Legacy::topo2map {fin {fout {stdout}} {flag 0}} {
+proc CGit::Legacy::topo2map {fin {fout {stdout}} {flag 0}} {
 
     variable sys
     array unset topo *
@@ -735,8 +735,8 @@ proc CGtools::Legacy::topo2map {fin {fout {stdout}} {flag 0}} {
 
     ## Preamble
     set cmd {}
-    lappend cmd "if \{!\[namespace exists ::CGtools\]\} \{\n"
-    lappend cmd "namespace eval ::CGtools:: \{\n"
+    lappend cmd "if \{!\[namespace exists ::CGit\]\} \{\n"
+    lappend cmd "namespace eval ::CGit:: \{\n"
     lappend cmd "variable maptest 1;\n"
     lappend cmd "source common.tcl;\n"
     lappend cmd "\}\n\}\n"
@@ -749,7 +749,7 @@ proc CGtools::Legacy::topo2map {fin {fout {stdout}} {flag 0}} {
     foreach r $resname {
 
 	## A proc for each residue type to keep things nice
-	lappend cmd "proc ::CGtools::map_$r \{\} \{\n"
+	lappend cmd "proc ::CGit::map_$r \{\} \{\n"
 	lappend cmd "variable map;\n"
 
 	if {$flag == 0} {
@@ -814,14 +814,14 @@ proc CGtools::Legacy::topo2map {fin {fout {stdout}} {flag 0}} {
 
     # Commands to load the proc when the file is sourced
     foreach r $resname {
-	lappend cmd "::CGtools::map_$r;\n"
-	lappend cmd "::CGtools::cleanup_map $r;\n"
+	lappend cmd "::CGit::map_$r;\n"
+	lappend cmd "::CGit::cleanup_map $r;\n"
     }
 
-    lappend cmd "if \{ \$::CGtools::maptest \} \{\n"
+    lappend cmd "if \{ \$::CGit::maptest \} \{\n"
     lappend cmd "foreach r \{$resname\} \{\n"
-    lappend cmd "::CGtools::map_stats \$r;\n"
-    lappend cmd "::CGtools::checkbonds \$r;\n"
+    lappend cmd "::CGit::map_stats \$r;\n"
+    lappend cmd "::CGit::checkbonds \$r;\n"
     lappend cmd "\}\n\}\n"
 
     ## Write to stdout/file or load it directly?
@@ -862,7 +862,7 @@ proc CGtools::Legacy::topo2map {fin {fout {stdout}} {flag 0}} {
 ## have defined a new molecule or have a PSF file we want to
 ## convert. We still need to define the atomic makeup of the beads
 ## afterwards.
-proc CGtools::Legacy::sel2map {sel {fname {stdout}} {flag 0}} {
+proc CGit::Legacy::sel2map {sel {fname {stdout}} {flag 0}} {
 
     variable sys
 
@@ -871,8 +871,8 @@ proc CGtools::Legacy::sel2map {sel {fname {stdout}} {flag 0}} {
 
     ## Preamble
     set cmd {}
-    lappend cmd "if \{!\[namespace exists ::CGtools\]\} \{\n"
-    lappend cmd "namespace eval ::CGtools:: \{\n"
+    lappend cmd "if \{!\[namespace exists ::CGit\]\} \{\n"
+    lappend cmd "namespace eval ::CGit:: \{\n"
     lappend cmd "variable maptest 1;\n"
     lappend cmd "source common.tcl;\n"
     lappend cmd "\}\n\}\n"
@@ -890,7 +890,7 @@ proc CGtools::Legacy::sel2map {sel {fname {stdout}} {flag 0}} {
         if {[$sel2 num] == 0} {continue}
 
         ## A proc for each residue type to keep things nice
-        lappend cmd "proc ::CGtools::map_$r \{\} \{\n"
+        lappend cmd "proc ::CGit::map_$r \{\} \{\n"
         lappend cmd "variable map;\n"
 
         if {$flag == 0} {
@@ -932,14 +932,14 @@ proc CGtools::Legacy::sel2map {sel {fname {stdout}} {flag 0}} {
 
     # Commands to load the proc when the file is sourced
     foreach r $resname {
-        lappend cmd "::CGtools::map_$r;\n"
-        lappend cmd "::CGtools::cleanup_map $r;\n"
+        lappend cmd "::CGit::map_$r;\n"
+        lappend cmd "::CGit::cleanup_map $r;\n"
     }
 
-    lappend cmd "if \{ \$::CGtools::maptest \} \{\n"
+    lappend cmd "if \{ \$::CGit::maptest \} \{\n"
     lappend cmd "foreach r \{$resname\} \{\n"
-    lappend cmd "::CGtools::map_stats \$r;\n"
-    lappend cmd "::CGtools::checkbonds \$r;\n"
+    lappend cmd "::CGit::map_stats \$r;\n"
+    lappend cmd "::CGit::checkbonds \$r;\n"
     lappend cmd "\}\n\}\n"
 
     ## Write to stdout/file or load it directly?
@@ -978,7 +978,7 @@ proc CGtools::Legacy::sel2map {sel {fname {stdout}} {flag 0}} {
 
 ## Convert PSF file to map file
 ## FIX ME
-proc ::CGtools::Legacy::psf2map {psffile {mapfile stdout}} {
+proc ::CGit::Legacy::psf2map {psffile {mapfile stdout}} {
 
     variable sys
     array set map {}
@@ -1035,8 +1035,8 @@ proc ::CGtools::Legacy::psf2map {psffile {mapfile stdout}} {
 
     ## Preamble
     set cmd {}
-    lappend cmd "if \{!\[namespace exists ::CGtools\]\} \{\n"
-    lappend cmd "namespace eval ::CGtools:: \{\n"
+    lappend cmd "if \{!\[namespace exists ::CGit\]\} \{\n"
+    lappend cmd "namespace eval ::CGit:: \{\n"
     lappend cmd "variable maptest 1;\n"
     lappend cmd "source common.tcl;\n"
     lappend cmd "\}\n\}\n"
@@ -1053,7 +1053,7 @@ proc ::CGtools::Legacy::psf2map {psffile {mapfile stdout}} {
         }
 
         ## A proc for each residue type to keep things nice
-        lappend cmd "proc ::CGtools::map_$r \{\} \{\n"
+        lappend cmd "proc ::CGit::map_$r \{\} \{\n"
         lappend cmd "variable map;\n"
         lappend cmd "puts \"Loading CG mappings from \[info script\]\";\n"
 
@@ -1079,7 +1079,7 @@ proc ::CGtools::Legacy::psf2map {psffile {mapfile stdout}} {
 # | for the atom in each bead would be 0.5.                    |
 # +------------------------------------------------------------+
 
-proc ::CGtools::Legacy::mapWeights {resname} {
+proc ::CGit::Legacy::mapWeights {resname} {
     variable map
 
     foreach r $resname {

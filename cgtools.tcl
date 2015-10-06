@@ -1,10 +1,10 @@
 #!/usr/bin/tclsh
 
-# +----------+
-# | CG-Tools |
-# +----------+
+# +-------+
+# | CG-it |
+# +-------+
 
-# CGtools, a VMD package to simplify creating coarse grained SDK
+# CG-it, a VMD package to simplify creating coarse grained SDK
 # topologies.
 
 # Copyright (c) 2013 by Chris MacDermaid <chris.macdermaid@gmail.com>
@@ -19,9 +19,9 @@ package require topotools
 ## This package makes extensive use of some Tcl 8.5 features.
 package require Tcl 8.5
 
-namespace eval ::CGtools:: {
+namespace eval ::CGit:: {
 
-    namespace export CGtools
+    namespace export CGit
 
     variable version 1.1
 
@@ -74,11 +74,11 @@ namespace eval ::CGtools:: {
 # | Global command |
 # +----------------+
 
-proc CGtools { args } {
-    eval ::CGtools::CGtools $args
+proc CGit { args } {
+    eval ::CGit::CGit $args
 }
 
-proc CGtools::title {} {
+proc CGit::title {} {
 
     variable version
 
@@ -88,7 +88,7 @@ proc CGtools::title {} {
 
 }
 
-proc CGtools::usage {} {
+proc CGit::usage {} {
 
     set groups(1) "common flags:"
     set commands(1) {\
@@ -169,7 +169,7 @@ proc CGtools::usage {} {
 # | Parse arguments, set defaults, execute directives |
 # +---------------------------------------------------+
 
-proc CGtools::CGtools { args } {
+proc CGit::CGit { args } {
 
     variable validcmd
 
@@ -420,7 +420,7 @@ proc CGtools::CGtools { args } {
 # +---------+
 
 ## A wrapper around cgCon
-proc CGtools::cgCon {flag str} {
+proc CGit::cgCon {flag str} {
     switch -- $flag {
         "-error" -
         "-err"  { vmdcon -err  "CG> $str" }
@@ -434,10 +434,10 @@ proc CGtools::cgCon {flag str} {
 # | Startup |
 # +---------+
 
-interp alias {} cg {} ::CGtools::CGtools
-package provide cg $::CGtools::version
+interp alias {} cg {} ::CGit::CGit
+package provide cg $::CGit::version
 
-if {$::CGtools::showtitle} {::CGtools::title}
+if {$::CGit::showtitle} {::CGit::title}
 
 ## Load other cgtools files
 #source [file join $env(CGTOOLSDIR) maps common.tcl]
@@ -453,4 +453,4 @@ source [file join $env(CGTOOLSDIR) json.tcl]
 catch {load [file join $env(CGTOOLSDIR) libcgmap.so]}
 
 ## Load the default mappings from maps in $env(CGTOOLSDIR)/maps
-##::CGtools::map_defaults
+##::CGit::map_defaults

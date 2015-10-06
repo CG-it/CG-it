@@ -1,10 +1,10 @@
 #!/usr/bin/tclsh
 
-# +----------+
-# | CG-Tools |
-# +----------+
+# +-------+
+# | CG-it |
+# +-------+
 
-# CGtools, a VMD package to simplify creating coarse grained SDK
+# CG-it, a VMD package to simplify creating coarse grained SDK
 # topologies.
 
 # Copyright (c) 2013 by Chris MacDermaid <chris.macdermaid@gmail.com>
@@ -13,7 +13,7 @@
 #(Shinoda) Shinoda, DeVane, Klein, Mol Sim, 33, 27 (2007).
 #(DeVane) Shinoda, DeVane, Klein, Soft Matter, 4, 2453-2462 (2008).
 
-proc CGtools::map {args} {
+proc CGit::map {args} {
 
     set sel [lindex $args 0]
     set molid [$sel molid]
@@ -139,7 +139,7 @@ proc CGtools::map {args} {
 
 ## Assigns a unique BeadID to atoms
 ## using the user field.
-proc CGtools::setBeadID {sel} {
+proc CGit::setBeadID {sel} {
 
     set molid   [$sel molid]
     set seltext [$sel text]
@@ -185,7 +185,7 @@ proc CGtools::setBeadID {sel} {
     $sel set user $ids
 }
 
-proc CGtools::setOrder {sel} {
+proc CGit::setOrder {sel} {
 
     set molid   [$sel molid]
     set seltext [$sel text]
@@ -217,7 +217,7 @@ proc CGtools::setOrder {sel} {
 ## Compares residue first, then
 ## by particular atom order specified
 ## as a list in "l"
-proc CGtools::aacompare {l a b} {
+proc CGit::aacompare {l a b} {
 
     lassign $a name_a residue_a
     lassign $b name_b residue_b
@@ -240,7 +240,7 @@ proc CGtools::aacompare {l a b} {
 ## Map the coordinates
 ## The best spead you can get with this routine
 ## is about 20 fps.
-proc CGtools::cgmap {args} {
+proc CGit::cgmap {args} {
 
     set nargs [llength $args]
     set newargs ""
