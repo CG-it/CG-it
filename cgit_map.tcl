@@ -83,7 +83,7 @@ proc CGit::map {args} {
     $sel2 delete
 
     set props {}
-    set keys {residue resid resname chain segname segid occupancy beta}
+    set keys {residue resid resname chain segname occupancy beta}
 
     ## Get unique residues defined in the selection, currently only entire
     ## residues can be coarse-grained
@@ -95,13 +95,13 @@ proc CGit::map {args} {
     foreach r $residues {
         lassign $r {*}$keys
         foreach bead [getMap $resname -keys {type name charge mass} -transpose] {
-            lappend props [concat $bead $chain $resid $resname\
-                               $segname $segid $occupancy $beta]
+            lappend props [list {*}$bead $chain $resid $resname\
+                               $segname $occupancy $beta]
         }
     }
 
     set keys {type name charge mass chain\
-                  resid resname segname segid occupancy beta}
+                  resid resname segname occupancy beta}
 
     ## Make a new "empty" mol
     set molname CGmol-$molid
