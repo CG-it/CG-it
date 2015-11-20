@@ -176,7 +176,7 @@ proc CGit::reanalyze_mol { args } {
     foreach a $flags {
         switch $a {
             bonds {puts "retyping bonds"; topo -sel $sel2 retypebonds}
-            angles {puts "reytping angles"; topo -sel $sel2 retypeangles}
+            angles {puts "retyping angles"; topo -sel $sel2 retypeangles}
             dihedrals {puts "retyping dihedrals"; topo -sel $sel2 retypedihedrals}
             impropers {puts "retyping impropers"; topo -sel $sel2 retypeimpropers}
             default { continue }
