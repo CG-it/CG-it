@@ -331,6 +331,12 @@ static int obj_Cgmap(ClientData /*UNUSED*/, Tcl_Interp *interp, int argc, Tcl_Ob
         }
         append_frame++;
 
+        Tcl_Obj *setframe = Tcl_ObjPrintf("molinfo %i set frame %i; display update", molid, frame);
+        if (Tcl_EvalObjEx(interp, setframe,  TCL_EVAL_DIRECT) != TCL_OK) {
+            Tcl_SetResult(interp, (char *) "Cgmap: error updating source frame", TCL_STATIC);
+            return TCL_ERROR;
+        }
+
         // Copy PBC conditions
         Tcl_Obj *setpbc = Tcl_ObjPrintf("molinfo %i set {a b c} [molinfo %i get {a b c}]", append_molid, molid);
         if (Tcl_EvalObjEx(interp, setpbc,  TCL_EVAL_DIRECT) != TCL_OK) {
@@ -349,6 +355,7 @@ static int obj_Cgmap(ClientData /*UNUSED*/, Tcl_Interp *interp, int argc, Tcl_Ob
         Tcl_IncrRefCount(bytes_append);
         Tcl_InvalidateStringRep(bytes_append);
         coords_append = reinterpret_cast<float *> (Tcl_GetByteArrayFromObj(bytes_append, &length));
+
 
         //loop over coordinates and beads, calculate COMs
         int current_bead, current_atom;
