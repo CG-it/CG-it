@@ -1,5 +1,5 @@
 # +----------+
-# | CG-Tools |
+# | CGit     |
 # +----------+
 
 # CGit, a VMD package to simplify creating coarse grained SDK
@@ -15,7 +15,7 @@ Speical thanks to Axel Kohlmeyer for advice and writing TopoTools.
 
 
 INSTALL:
-From the main package directory issuing 'make install' should be sufficent. This will install to ${HOME}/.vmdplugins/cgtools
+From the main package directory issuing 'make install' should be sufficent. This will install to ${HOME}/.vmdplugins/
 Then, add the following to your ${HOME}/.vmdrc file:
 
 # +-------------------------+

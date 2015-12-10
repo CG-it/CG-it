@@ -13,13 +13,13 @@ all: libcgmap.so
 
 ## Install everything from .rsync-include
 install:
-	mkdir -p ${HOME}/.vmdplugins/cgtools${VERSION} 2>/dev/null || :
-	rsync -av --include-from=.rsync-include --exclude="*" . ${HOME}/.vmdplugins/cgtools${VERSION}/.
+	mkdir -p ${HOME}/.vmdplugins/cgit${VERSION} 2>/dev/null || :
+	rsync -av --include-from=.rsync-include --exclude="*" . ${HOME}/.vmdplugins/cgit${VERSION}/.
 	cd cgmap; make install "VERSION=$(VERSION)"
 
 ## Make archive from latest commit
 archive:
-	$(GIT) archive --prefix=cgtools${VERSION}/ HEAD -o cgtools-latest.zip
+	$(GIT) archive --prefix=cgit${VERSION}/ HEAD -o cgit-latest.zip
 	cd examples; make archive
 
 ## Update list of files to be installed

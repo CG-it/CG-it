@@ -7,10 +7,10 @@
 /**
  *
  * +----------+
- * | CG-Tools |
+ * | CGit     |
  * +----------+
  *
- * CGtools, a VMD package to simplify creating coarse grained SDK
+ * CGit a VMD package to simplify creating coarse grained SDK
  * topologies.
  *
  * Copyright (c) 2013 by Chris MacDermaid <chris.macdermaid@gmail.com>
@@ -251,7 +251,7 @@ static int obj_Cgmap(ClientData /*UNUSED*/, Tcl_Interp *interp, int argc, Tcl_Ob
     }
 
     // Get the atom IDs, we use these as a map when accessing the coordinate array
-    // user2 is set via ::CGtools::setBeadID
+    // user2 is set via ::CGit::setBeadID
     script = Tcl_DuplicateObj(atomselect);
     Tcl_AppendPrintfToObj (script, " get %s", order_field);
     if (Tcl_EvalObjEx(interp, script, TCL_EVAL_DIRECT) != TCL_OK) {
@@ -301,7 +301,7 @@ static int obj_Cgmap(ClientData /*UNUSED*/, Tcl_Interp *interp, int argc, Tcl_Ob
 
         if (frame % print == 0) {
             //Tcl_Obj *msg = Tcl_ObjPrintf ("puts \"Mapping frame %i\"", frame);
-            Tcl_Obj *msg = Tcl_ObjPrintf ("vmdcon -info \"CGTOOLS> Mapping frame %i\"", frame);
+            Tcl_Obj *msg = Tcl_ObjPrintf ("vmdcon -info \"CGit> Mapping frame %i\"", frame);
             result = Tcl_EvalObjEx(interp, msg, TCL_EVAL_DIRECT);
             if (result != TCL_OK) { return TCL_ERROR; }
         }
@@ -331,6 +331,12 @@ static int obj_Cgmap(ClientData /*UNUSED*/, Tcl_Interp *interp, int argc, Tcl_Ob
         }
         append_frame++;
 
+        Tcl_Obj *setframe = Tcl_ObjPrintf("molinfo %i set frame %i; display update", molid, frame);
+        if (Tcl_EvalObjEx(interp, setframe,  TCL_EVAL_DIRECT) != TCL_OK) {
+            Tcl_SetResult(interp, (char *) "Cgmap: error updating source frame", TCL_STATIC);
+            return TCL_ERROR;
+        }
+
         // Copy PBC conditions
         Tcl_Obj *setpbc = Tcl_ObjPrintf("molinfo %i set {a b c} [molinfo %i get {a b c}]", append_molid, molid);
         if (Tcl_EvalObjEx(interp, setpbc,  TCL_EVAL_DIRECT) != TCL_OK) {
@@ -349,6 +355,7 @@ static int obj_Cgmap(ClientData /*UNUSED*/, Tcl_Interp *interp, int argc, Tcl_Ob
         Tcl_IncrRefCount(bytes_append);
         Tcl_InvalidateStringRep(bytes_append);
         coords_append = reinterpret_cast<float *> (Tcl_GetByteArrayFromObj(bytes_append, &length));
+
 
         //loop over coordinates and beads, calculate COMs
         int current_bead, current_atom;
@@ -452,7 +459,7 @@ extern "C" {
         if (Tcl_PkgProvide(interp, PACKAGE_NAME, PACKAGE_VERSION) != TCL_OK)
             return TCL_ERROR;
 
-        Tcl_CreateObjCommand(interp, "::CGtools::cgmap", obj_Cgmap,
+        Tcl_CreateObjCommand(interp, "::CGit::cgmap", obj_Cgmap,
                              (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
         return TCL_OK;
     }

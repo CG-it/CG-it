@@ -29,5 +29,5 @@ clean:
 	rm *.o *.so
 
 install:
-	mkdir -p $(PLUGINDIR)/cgtools$(VERSION) && \
-		rsync -av cgmap.so $(PLUGINDIR)/cgtools$(VERSION)/.
+	mkdir -p $(PLUGINDIR)/cgit$(VERSION) && \
+		rsync -av cgmap.so $(PLUGINDIR)/cgit$(VERSION)/.

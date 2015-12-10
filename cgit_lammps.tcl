@@ -137,7 +137,7 @@ proc CGit::writelammpsparam {molid fname {flag none} {guess 0}} {
     puts $fid "\n"
     flush $fid
 
-    if {1} {writecsv $types}
+    #if {0} {writecsv $types}
 
     ## bonded interactions
     set bondtypelist [dict get $topodict bond]

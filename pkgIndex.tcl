@@ -8,5 +8,5 @@
 # script is sourced, the variable $dir must contain the
 # full path name of this file's directory.
 
-package ifneeded cg 1.1 "set env(CGTOOLSDIR) {$dir}; [list source [file join $dir cgtools.tcl ]]"
+package ifneeded cg 1.1 "set env(CGITDIR) {$dir}; [list source [file join $dir cgit.tcl ]]"
 

@@ -25,7 +25,7 @@ namespace eval ::CGit:: {
 
     variable version 1.1
 
-    ## Valid cgtools commands
+    ## Valid cgit commands
 
     variable validcmd {readtop readparam reanalyzemol setbonds
         setangles setdihedrals reset clear writelammpsdata writelammpsparam
@@ -60,7 +60,7 @@ namespace eval ::CGit:: {
     variable showtitle 0
 
     ## Locations of additional data files
-    variable datadir $env(CGTOOLSDIR)
+    variable datadir $env(CGITDIR)
 
     ## Make some utility commands accessable
     namespace export map map_trajectory
@@ -154,7 +154,7 @@ proc CGit::usage {} {
                      }
 
     cgCon -info "usage: cg <command> \[args...\] <flags>"
-    cgCon -info "Note: by default, cgtools works on all atoms in the top molecule"
+    cgCon -info "Note: by default, cgit works on all atoms in the top molecule"
     cgCon -info ""
 
     ## Print out each group
@@ -271,7 +271,7 @@ proc CGit::CGit { args } {
         readtop {
 
             if {[llength $newargs] < 1} {
-                cgCon -err "cgtools 'readtop' requires a file to read from"
+                cgCon -err "cgit 'readtop' requires a file to read from"
                 usage
                 return
             }
@@ -300,7 +300,7 @@ proc CGit::CGit { args } {
 
         readparam {
             if {[llength $newargs] < 1} {
-                cgCon -err "cgtools 'readparam' requires a file to read from"
+                cgCon -err "cgit 'readparam' requires a file to read from"
                 usage
                 return
             }
@@ -312,7 +312,7 @@ proc CGit::CGit { args } {
         writelammpsdata {
 
             if {[llength $newargs] < 1} {
-                cgCon -err "cgtools 'writelammpsdata' requires a file to write to as argument"
+                cgCon -err "cgit 'writelammpsdata' requires a file to write to as argument"
                 usage
                 return
             }
@@ -323,7 +323,7 @@ proc CGit::CGit { args } {
         writelammpsparam {
 
             if {[llength $newargs] < 1} {
-                cgCon -err "cgtools 'writelammpsparam' requires a file to write to as argument"
+                cgCon -err "cgit 'writelammpsparam' requires a file to write to as argument"
                 usage
                 return
             }
@@ -337,7 +337,7 @@ proc CGit::CGit { args } {
         mapread -
         readmap {
             if {[llength $newargs] < 0} {
-                cgCon -err "cgtools 'readmap' requires a file to read from as argument"
+                cgCon -err "cgit 'readmap' requires a file to read from as argument"
                 usage
                 return
             }
@@ -439,18 +439,18 @@ package provide cg $::CGit::version
 
 if {$::CGit::showtitle} {::CGit::title}
 
-## Load other cgtools files
-#source [file join $env(CGTOOLSDIR) maps common.tcl]
-source [file join $env(CGTOOLSDIR) cgtools_map.tcl]
-source [file join $env(CGTOOLSDIR) cgtools_partopo.tcl]
-source [file join $env(CGTOOLSDIR) cgtools_traj.tcl]
-source [file join $env(CGTOOLSDIR) cgtools_lammps.tcl]
-source [file join $env(CGTOOLSDIR) cgtools_solvate.tcl]
-source [file join $env(CGTOOLSDIR) cgtools_legacy.tcl]
-source [file join $env(CGTOOLSDIR) json.tcl]
+## Load other cgit files
+#source [file join $env(CGITDIR) maps common.tcl]
+source [file join $env(CGITDIR) cgit_map.tcl]
+source [file join $env(CGITDIR) cgit_partopo.tcl]
+source [file join $env(CGITDIR) cgit_traj.tcl]
+source [file join $env(CGITDIR) cgit_lammps.tcl]
+source [file join $env(CGITDIR) cgit_solvate.tcl]
+source [file join $env(CGITDIR) cgit_legacy.tcl]
+source [file join $env(CGITDIR) json.tcl]
 
 ## C-based routines
-catch {load [file join $env(CGTOOLSDIR) libcgmap.so]}
+catch {load [file join $env(CGITDIR) libcgmap.so]}
 
-## Load the default mappings from maps in $env(CGTOOLSDIR)/maps
+## Load the default mappings from maps in $env(CGITDIR)/maps
 ##::CGit::map_defaults
