@@ -2,6 +2,7 @@
 INSTALL
 Makefile
 cgit.tcl
+cgit_helpers.tcl
 cgit_lammps.tcl
 cgit_legacy.tcl
 cgit_map.tcl
@@ -13,13 +14,6 @@ cgmap/Makefile
 cgmap/Makefile.base
 cgmap/Makefile.osx32
 cgmap/cgmap.cpp
-cgtools.tcl
-cgtools_lammps.tcl
-cgtools_legacy.tcl
-cgtools_map.tcl
-cgtools_partopo.tcl
-cgtools_solvate.tcl
-cgtools_traj.tcl
 json.tcl
 json_tcl.tcl
 license

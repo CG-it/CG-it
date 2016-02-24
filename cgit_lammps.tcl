@@ -21,7 +21,7 @@ proc CGit::writelammpsdata {molid fname {style full}} {
     topo -molid $molid writelammpsdata $fname $style
 }
 
-proc CGit::readlammpsdata {molid fname {style full}} {
+proc CGit::readlammpsdata {fname {style full}} {
 
   ## Read the topology file and do the best we can assigning 
   ## atom names to the molecules. There are a lot of assumptions:
@@ -29,13 +29,14 @@ proc CGit::readlammpsdata {molid fname {style full}} {
   # 1. Residues are grouped contigiously w.r.t the atom selection 
   # 2. The atom order in each residue type is consistent across residues 
   # 3. There are no missing atoms
-  # 4. There is not an insane (10e6) amount of beads/atoms 
+  # 4. The atom order in the data file matches that of the map
+  # 5. There is not an insane (10e6) amount of beads/atoms 
   
-  set newmolid [topo -molid $molid readlammpsdata $fname $style]
+  set molid [topo readlammpsdata $fname $style]
 
   ## Get list of residues, and their numbers
-  set sel      [atomselect $newmolid "all"] 
-  set residues [lsort -unique [$sel get resname] 
+  set sel      [atomselect $molid "all"] 
+  set residues [lsort -unique [$sel get resname]] 
   $sel delete
 
   array set nres {}
@@ -43,16 +44,16 @@ proc CGit::readlammpsdata {molid fname {style full}} {
   
   ## loop over residue types, calculate the number of residues each
   foreach r $residues {
-    set sel [atomselect $newmolid "resname $r"]
+    set sel [atomselect $molid "resname $r"]
     lappend sels($r) $sel
-    lappend nres($r) nres $sel
+    lappend nres($r) [nres $sel]
   }
 
   ## create a list with atom names * nres
   set names {} 
   foreach r $residues {
     set names [::CGit::getMap $r -keys name]
-    set names [lrepeat $nres($r) $names] 
+    set names [lrepeat $nres($r) {*}$names] 
 
     ## Things get dicey here. If there are too many atoms
     ## to apply here via the atomselections, vmd could puke
@@ -63,7 +64,7 @@ proc CGit::readlammpsdata {molid fname {style full}} {
   #cleanup 
   foreach r $residues { $sels($r) delete }
 
-  return $newmolid
+  return $molid
 }
 
 # +---------------------------------------------+
