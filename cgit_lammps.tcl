@@ -21,6 +21,51 @@ proc CGit::writelammpsdata {molid fname {style full}} {
     topo -molid $molid writelammpsdata $fname $style
 }
 
+proc CGit::readlammpsdata {molid fname {style full}} {
+
+  ## Read the topology file and do the best we can assigning 
+  ## atom names to the molecules. There are a lot of assumptions:
+  # 0. There are resnames to begin with
+  # 1. Residues are grouped contigiously w.r.t the atom selection 
+  # 2. The atom order in each residue type is consistent across residues 
+  # 3. There are no missing atoms
+  # 4. There is not an insane (10e6) amount of beads/atoms 
+  
+  set newmolid [topo -molid $molid readlammpsdata $fname $style]
+
+  ## Get list of residues, and their numbers
+  set sel      [atomselect $newmolid "all"] 
+  set residues [lsort -unique [$sel get resname] 
+  $sel delete
+
+  array set nres {}
+  array set sels {}
+  
+  ## loop over residue types, calculate the number of residues each
+  foreach r $residues {
+    set sel [atomselect $newmolid "resname $r"]
+    lappend sels($r) $sel
+    lappend nres($r) nres $sel
+  }
+
+  ## create a list with atom names * nres
+  set names {} 
+  foreach r $residues {
+    set names [::CGit::getMap $r -keys name]
+    set names [lrepeat $nres($r) $names] 
+
+    ## Things get dicey here. If there are too many atoms
+    ## to apply here via the atomselections, vmd could puke
+    ## if we overflow the selection text buffer 
+    $sels($r) set name $names
+  }
+
+  #cleanup 
+  foreach r $residues { $sels($r) delete }
+
+  return $newmolid
+}
+
 # +---------------------------------------------+
 # | Write out a lammps formatted parameter file |
 # +---------------------------------------------+

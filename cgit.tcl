@@ -447,6 +447,7 @@ source [file join $env(CGITDIR) cgit_traj.tcl]
 source [file join $env(CGITDIR) cgit_lammps.tcl]
 source [file join $env(CGITDIR) cgit_solvate.tcl]
 source [file join $env(CGITDIR) cgit_legacy.tcl]
+source [file join $env(CGITDIR) cgit_helpers.tcl]
 source [file join $env(CGITDIR) json.tcl]
 
 ## C-based routines
