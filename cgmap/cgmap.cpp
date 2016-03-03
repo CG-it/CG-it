@@ -463,4 +463,79 @@ extern "C" {
                              (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
         return TCL_OK;
     }
+
+#if defined(CCBTCLDLL_EXPORTS) && defined(_WIN32)
+#  undef TCL_STORAGE_CLASS
+#  define TCL_STORAGE_CLASS DLLEXPORT
+
+#define WIN32_LEAN_AND_MEAN /* Exclude rarely-used stuff from Windows headers */
+#include <windows.h>
+
+    BOOL APIENTRY DllMain( HANDLE hModule,
+                           DWORD  ul_reason_for_call,
+                           LPVOID lpReserved )
+    {
+        return TRUE;
+    }
+
+    EXTERN int Cgmap_SafeInit(Tcl_Interp *)
+
+#else
+
+            int Cgmap_SafeInit(Tcl_Interp *)
+
+#endif
+    {
+        return TCL_OK;
+    }
+
+#if defined(CCBTCLDLL_EXPORTS) && defined(_WIN32)
+#  undef TCL_STORAGE_CLASS
+#  define TCL_STORAGE_CLASS DLLEXPORT
+
+#define WIN32_LEAN_AND_MEAN /* Exclude rarely-used stuff from Windows headers */
+#include <windows.h>
+
+    BOOL APIENTRY DllMain( HANDLE hModule,
+                           DWORD  ul_reason_for_call,
+                           LPVOID lpReserved )
+    {
+        return TRUE;
+    }
+
+    EXTERN int Cgmap_SafeUnload(Tcl_Interp *)
+
+#else
+
+            int Cgmap_SafeUnload(Tcl_Interp *)
+
+#endif
+    {
+        return TCL_OK;
+    }
+
+#if defined(CCBTCLDLL_EXPORTS) && defined(_WIN32)
+#  undef TCL_STORAGE_CLASS
+#  define TCL_STORAGE_CLASS DLLEXPORT
+
+#define WIN32_LEAN_AND_MEAN /* Exclude rarely-used stuff from Windows headers */
+#include <windows.h>
+
+    BOOL APIENTRY DllMain( HANDLE hModule,
+                           DWORD  ul_reason_for_call,
+                           LPVOID lpReserved )
+    {
+        return TRUE;
+    }
+
+    EXTERN int Cgmap_Unload(Tcl_Interp *)
+
+#else
+
+            int Cgmap_Unload(Tcl_Interp *)
+
+#endif
+    {
+        return TCL_OK;
+    }
 }

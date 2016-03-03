@@ -28,9 +28,9 @@ namespace eval ::CGit:: {
     ## Valid cgit commands
 
     variable validcmd {readtop readparam reanalyzemol setbonds
-        setangles setdihedrals reset clear writelammpsdata writelammpsparam
-        writesdktopo writetop setbondparam setangleparam setpairparam
-        deletebondparam deleteangleparam deletepairparam getbondparam
+        setangles setdihedrals reset clear readlammpsdata writelammpsdata 
+        writelammpsparam writesdktopo writetop setbondparam setangleparam 
+        setpairparam deletebondparam deleteangleparam deletepairparam getbondparam
         getangleparam getpairparam readmap map maptrajectory maptraj
         printmap setparam deleteparam getparam printparam printmaptable
         printmap solvate help commands topo2map}
@@ -147,10 +147,12 @@ proc CGit::usage {} {
 
     set groups(6) "LAMMPS:"
     set commands(6) {\
-                         { {writelammpsdata}  {<filename> <atomstyle>} {Write out a data file suitable for use with lammps}}\
-                         { {writelammpsparam} {<filename>}             {Write out a lammps SDK 'parameter' file containing}}\
-                         { {}                 {<cpu> <gpu> <both>}     {forcefield parameters required by the system. Compatible}}\
-                         { {}                 {}                       {options for simulating with <cpu> <gpu> or <both> are provided}}\
+                         { {writelammpsdata}  {<filename> <atomstyle>}             {Write out a data file suitable for use with lammps}}\
+                         { {readlammpsdata}   {<filename>            }             {Read in a lammps data file}}\
+                         { {}                 {<atomstyle> <guessnames>}           {}}\
+                         { {writelammpsparam} {<filename>}                         {Write out a lammps SDK 'parameter' file containing}}\
+                         { {}                 {<cpu> <gpu> <both>}                 {forcefield parameters required by the system. Compatible}}\
+                         { {}                 {}                                   {options for simulating with <cpu> <gpu> or <both> are provided}}\
                      }
 
     cgCon -info "usage: cg <command> \[args...\] <flags>"
@@ -309,6 +311,16 @@ proc CGit::CGit { args } {
             readParam {*}$newargs
         }
 
+       readlammpsdata {
+            if {[llength $newargs] < 1} {
+                cgCon -err "cgit 'readlammpsdata' requires a file to read from as argument"
+                usage
+                return
+            }
+
+            set retval [readlammpsdata {*}$newargs]
+        }
+        
         writelammpsdata {
 
             if {[llength $newargs] < 1} {

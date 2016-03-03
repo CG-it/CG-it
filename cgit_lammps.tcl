@@ -21,7 +21,7 @@ proc CGit::writelammpsdata {molid fname {style full}} {
     topo -molid $molid writelammpsdata $fname $style
 }
 
-proc CGit::readlammpsdata {fname {style full}} {
+proc CGit::readlammpsdata {fname {style full} {guess 0}} {
 
   ## Read the topology file and do the best we can assigning 
   ## atom names to the molecules. There are a lot of assumptions:
@@ -34,35 +34,39 @@ proc CGit::readlammpsdata {fname {style full}} {
   
   set molid [topo readlammpsdata $fname $style]
 
-  ## Get list of residues, and their numbers
-  set sel      [atomselect $molid "all"] 
-  set residues [lsort -unique [$sel get resname]] 
-  $sel delete
+  if {$guess} {
 
-  array set nres {}
-  array set sels {}
-  
-  ## loop over residue types, calculate the number of residues each
-  foreach r $residues {
-    set sel [atomselect $molid "resname $r"]
-    lappend sels($r) $sel
-    lappend nres($r) [nres $sel]
+    ## Get list of residues, and their numbers
+    set sel      [atomselect $molid "all"] 
+    set residues [lsort -unique [$sel get resname]] 
+    $sel delete
+
+    array set nres {}
+    array set sels {}
+    
+    ## loop over residue types, calculate the number of residues each
+    foreach r $residues {
+      set sel [atomselect $molid "resname $r"]
+      lappend sels($r) $sel
+      lappend nres($r) [nres $sel]
+    }
+
+    ## create a list with atom names * nres
+    set names {} 
+    foreach r $residues {
+      set names [::CGit::getMap $r -keys name]
+      set names [lrepeat $nres($r) {*}$names] 
+
+      ## Things get dicey here. If there are too many atoms
+      ## to apply here via the atomselections, vmd could puke
+      ## if we overflow the selection text buffer 
+      $sels($r) set name $names
+    }
+
+    #cleanup 
+    foreach r $residues { $sels($r) delete }
+
   }
-
-  ## create a list with atom names * nres
-  set names {} 
-  foreach r $residues {
-    set names [::CGit::getMap $r -keys name]
-    set names [lrepeat $nres($r) {*}$names] 
-
-    ## Things get dicey here. If there are too many atoms
-    ## to apply here via the atomselections, vmd could puke
-    ## if we overflow the selection text buffer 
-    $sels($r) set name $names
-  }
-
-  #cleanup 
-  foreach r $residues { $sels($r) delete }
 
   return $molid
 }
