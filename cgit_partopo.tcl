@@ -227,7 +227,16 @@ proc CGit::set_bonds { args } {
         ## Loop over all atom pairs. This assumes that the selection
         ## above isn't missing any atoms from the residues, and that
         ## the indices are numbered consecutively for each residue.
+        
+        set pbonds {}
         foreach pair $sdk_bondlist {
+
+            ## Extract residues that make bonds to residues before 
+            ## or after (+N / -C) that create a polymer chain  
+            if {[lsearch $pair "+*"] >= 0 ||
+                [lsearch $pair "-*"] >= 0} {
+                  lappend pbonds $pair; continue
+            }
 
             set sel2 [atomselect $molid "(name $pair and resname $r) and ($seltext)"]
 
@@ -236,6 +245,36 @@ proc CGit::set_bonds { args } {
             }
 
             $sel2 delete
+        }
+   
+        ## Bonds between residues in the same chain
+        foreach pair $pbonds {
+
+          ## Get the names without the +/- identifiers 
+          set names [string map  {+ "" - ""} $pair]
+         
+          ## Residues should be consecutive in chains. Chains are never
+          ## connected, this should be done via topotools, if necessary, or
+          ## just given the same chain identifier. No checks are currently
+          ## done, it is up to the user to make sure the correct topology is
+          ## provided and subsequently checked.
+          set sel2 [atomselect $molid "(name $names and resname $r) and ($seltext)"] 
+          set props [$sel get {chain resid index}]
+          $sel2 delete
+
+          ## Sort by chain, then by resid
+          set props [lsort -index 0 [lsort -index 1 -integer $props]] 
+          set props [lrange $props 1 end]; # Remove the first element 
+
+          foreach {x y} $props {
+            lassign $x chainx residuex indexx
+            lassign $y chainy residuey indexy
+            
+            if { $chainx == $chainy &&
+                 $residuey == $residuex + 1 } {
+                   lappend topo_bondlist [list $indexx $indexy]
+            }
+          }
         }
     }
 
@@ -287,10 +326,18 @@ proc CGit::set_angles { args } {
         } else {
 
             ## Loop over all atom tuples.
+            set tangles {}
             foreach tuple $sdk_anglelist {
 
                 if {[llength $tuple] != 3} {
                     cgCon -warn "bad angle definition: $tuple"
+                }
+
+                ## Extract residues that make angles to residues before 
+                ## or after (+N / -C) that create a polymer chain  
+                if {[lsearch $tuple "+*"] >= 0 ||
+                    [lsearch $tuple "-*"] >= 0} {
+                      lappend tangles $tuple; continue
                 }
 
                 ## Order here is important! With bonding it doesn't
@@ -302,7 +349,7 @@ proc CGit::set_angles { args } {
                 set index [$sel2 get index]
 
                 ## Isolate each atom, loop over in parallel, this assumes that all atoms
-                ## are order the same in each residue.
+                ## are ordered the same in each residue.
                 set a1 [lsearch -exact -all $name [lindex $tuple 0]]
                 set a2 [lsearch -exact -all $name [lindex $tuple 1]]
                 set a3 [lsearch -exact -all $name [lindex $tuple 2]]
@@ -322,8 +369,84 @@ proc CGit::set_angles { args } {
                 ## Cleanup selection
                 $sel2 delete
             }
+
+            foreach tuple $tangles {
+
+              ## Get the names without the +/- identifiers 
+              set names [string map  {+ "" - ""} $tuple]
+             
+              ## Select the atoms
+              set sel2 [atomselect $molid "(name $names and resname $r) and ($seltext)"]
+              set props [$sel get {name chain resid index}]
+              $sel2 delete
+
+              ## Sort by chain, then by resid
+              set props [lsort -index 1 [lsort -integer -index 2 $props]] 
+
+              ## Isolate each atom, loop over in parallel, this assumes that all atoms
+              ## are ordered the same in each residue and that there are no
+              ## missing atoms. 
+              set a1 [lsearch -inline -exact -all -index 0 $props [lindex $names 0]]
+              set a2 [lsearch -inline -exact -all -index 0 $props [lindex $names 1]]
+              set a3 [lsearch -inline -exact -all -index 0 $props [lindex $names 2]]
+
+              #^-[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9] -*-*-*
+              #^-[A-Za-z0-9]+--[A-Za-z0-9]+-[A-Za-z0-9] -*--*-*
+              # ^[A-Za-z0-9]+-\+[A-Za-z0-9]+-\+[A-Za-z0-9] *-+*-+*
+              # ^[A-Za-z0-9]+-[A-Za-z0-9]+-\+[A-Za-z0-9] *-*-+*
+         
+              ## Validate tuple format and adjust lists to match
+              ## correct traversal order 
+              switch -regexp [join $tuple "-"] {
+ 
+                {^-[A-Za-z0-9]+--[A-Za-z0-9]+-[A-Za-z0-9]+} {
+                  set a3 [lrange $a3 1 end]
+                }
+                
+                {^-[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+} {
+                  set a2 [lrange $a2 1 end]
+                  set a3 [lrange $a3 1 end]
+                }
+                
+                {^[A-Za-z0-9]+-[A-Za-z0-9]+-\+[A-Za-z0-9]+} {
+                  set a3 [lrange $a3 1 end]
+                }
+    
+                {^[A-Za-z0-9]+-\+[A-Za-z0-9]+-\+[A-Za-z0-9]+} {
+                  set a2 [lrange $a2 1 end]
+                  set a3 [lrange $a3 1 end]
+                }
+                
+                default { 
+                  cgCon -error "Mangled angle definition: $tuple"
+                  return -code error $sys(ERROR)
+                }
+              } 
+          
+              foreach id1 $a1 id2 $a2 id3 $a3 {
+             
+                ## Check for the end of the id list 
+                if {$id1 == "" || $id2 == "" || $id3 == ""} {break}
+
+                lassign $id1 name1 chain1 resid1 index1
+                lassign $id2 name2 chain2 resid2 index2
+                lassign $id3 name3 chain3 resid3 index3
+
+                ## Check for same chain and consecutive resids.
+                ## It's messy, but it checks all possible cases
+                ## to make sure the topology makes sense
+                if {$chain1 == $chain2 && 
+                    $chain1 == $chain3 && (
+                    ($resid1 == $resid2 && $resid1 + 1 == $resid3) || 
+                    ($resid1 + 1 == $resid2 && $resid1 + 1 == $resid3)
+                    )} { 
+                      lappend topo_anglelist [list "UNK-UNK-UNK"\
+                        $index1 $index2 $index3]
+                }
+              }
+           }
         }
-    }
+     }
 
     ## Set angle list and retype
     topo -sel $sel setanglelist $topo_anglelist
@@ -373,10 +496,18 @@ proc CGit::set_dihedrals { args } {
         } else {
 
             ## Loop over all atom tuples.
+            set tdihed {}
             foreach tuple $sdk_dihedrallist {
 
                 if {[llength $tuple] != 4} {
                     cgCon -warn "bad dihedral definition: $tuple"
+                }
+
+                ## Extract residues that make dihedrals to residues before 
+                ## or after (+N / -C) that create a polymer chain  
+                if {[lsearch $tuple "+*"] >= 0 ||
+                    [lsearch $tuple "-*"] >= 0} {
+                      lappend tdihed $tuple; continue
                 }
 
                 ## Order here is important! With bonding it doesn't
@@ -411,6 +542,107 @@ proc CGit::set_dihedrals { args } {
                 ## Cleanup selection
                 $sel2 delete
             }
+           
+            foreach tuple $tdihed {
+
+              ## Get the names without the +/- identifiers 
+              set names [string map  {+ "" - ""} $tuple]
+             
+              ## Select the atoms
+              set sel2 [atomselect $molid "(name $names and resname $r) and ($seltext)"]
+              set props [$sel get {name chain resid index}]
+              $sel2 delete
+
+              ## Sort by chain, then by resid
+              set props [lsort -index 1 [lsort -integer -index 2 $props]] 
+
+              ## Isolate each atom, loop over in parallel, this assumes that all atoms
+              ## are ordered the same in each residue and that there are no
+              ## missing atoms. 
+              set a1 [lsearch -inline -exact -all -index 0 $props [lindex $names 0]]
+              set a2 [lsearch -inline -exact -all -index 0 $props [lindex $names 1]]
+              set a3 [lsearch -inline -exact -all -index 0 $props [lindex $names 2]]
+              set a4 [lsearch -inline -exact -all -index 0 $props [lindex $names 3]]
+
+              #^[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+-\+[A-Za-z0-9]+ *-*-*-+*
+              #^[A-Za-z0-9]+-[A-Za-z0-9]+-\+[A-Za-z0-9]+-\+[A-Za-z0-9]+ *-*-+*-+*
+              #^[A-Za-z0-9]+-\+[A-Za-z0-9]+-\+[A-Za-z0-9]+-\+[A-Za-z0-9]+ *-+*-+*-+*
+              #^[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+--[A-Za-z0-9]+ *-*-*--*        
+              #^[A-Za-z0-9]+-[A-Za-z0-9]+--[A-Za-z0-9]+--[A-Za-z0-9]+ *-*--*--*
+              #^[A-Za-z0-9]+--[A-Za-z0-9]+--[A-Za-z0-9]+--[A-Za-z0-9]+ *--*--*--*
+ 
+              ## Validate tuple format and adjust lists to match
+              ## correct traversal order 
+              switch -regexp [join $tuple "-"] {
+ 
+                {^[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+-\+[A-Za-z0-9]+}  {
+                  set a4 [lrange $a4 1 end]
+                }
+                
+                {^[A-Za-z0-9]+-[A-Za-z0-9]+-\+[A-Za-z0-9]+-\+[A-Za-z0-9]+}  {
+                  set a3 [lrange $a3 1 end]
+                  set a4 [lrange $a4 1 end]
+                }
+                
+                {^[A-Za-z0-9]+-\+[A-Za-z0-9]+-\+[A-Za-z0-9]+-\+[A-Za-z0-9]+}  {
+                  set a2 [lrange $a2 1 end]
+                  set a3 [lrange $a3 1 end]
+                  set a4 [lrange $a4 1 end]
+                }
+    
+                {^[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+--[A-Za-z0-9]+} {
+                  set a4 [lrange $a4 1 end]
+                }
+
+                {^[A-Za-z0-9]+-[A-Za-z0-9]+--[A-Za-z0-9]+--[A-Za-z0-9]+} {
+                  set a3 [lrange $a3 1 end]
+                  set a4 [lrange $a4 1 end]
+                }
+
+                {^[A-Za-z0-9]+--[A-Za-z0-9]+--[A-Za-z0-9]+--[A-Za-z0-9]+} {
+                  set a2 [lrange $a2 1 end]
+                  set a3 [lrange $a3 1 end]
+                  set a4 [lrange $a4 1 end]
+                }
+ 
+                default { 
+                  cgCon -error "Mangled dihedral definition: $tuple"
+                  return -code error $sys(ERROR)
+                }
+              } 
+          
+              foreach id1 $a1 id2 $a2 id3 $a3 id4 $a4 {
+             
+                ## Check for the end of the id list 
+                if {$id1 == "" || $id2 == "" ||
+                    $id3 == "" || $id4 == ""} {break}
+
+                lassign $id1 name1 chain1 resid1 index1
+                lassign $id2 name2 chain2 resid2 index2
+                lassign $id3 name3 chain3 resid3 index3
+                lassign $id4 name4 chain4 resid4 index4
+
+                ## Check for same chain and consecutive resids.
+                ## It's messy, but it checks all possible cases
+                ## to make sure the topology makes sense
+                if {$chain1 == $chain2 && 
+                    $chain1 == $chain3 &&
+                    $chain1 == $chain4 && (
+                    ($resid1 + 1 == $resid2 && 
+                     $resid1 + 1 == $resid3 && 
+                     $resid1 + 1 == $resid4) || 
+                    ($resid1 == $resid2 && 
+                     $resid1 + 1 == $resid3 && 
+                     $resid1 + 1 == $resid4) ||
+                    ($resid1 == $resid2 && 
+                     $resid1 == $resid3 && 
+                     $resid1 + 1 == $resid4)
+                    )} { 
+                      lappend topo_dihedrallist [list "UNK-UNK-UNK-UNK"\
+                        $index1 $index2 $index3 $index4]
+                }
+              }
+           } 
         }
     }
 
