@@ -148,12 +148,13 @@ proc CGit::usage {} {
     set groups(6) "LAMMPS:"
     set commands(6) {\
                          { {writelammpsdata}  {<filename> <atomstyle>}             {Write out a data file suitable for use with lammps}}\
-                         { {readlammpsdata}   {<filename>            }             {Read in a lammps data file}}\
-                         { {}                 {<atomstyle> <guessnames>}           {}}\
                          { {writelammpsparam} {<filename>}                         {Write out a lammps SDK 'parameter' file containing}}\
-                         { {}                 {<cpu> <gpu> <both>}                 {forcefield parameters required by the system. Compatible}}\
+                         { {}                 {(cpu|gpu|both)}                     {forcefield parameters required by the system. Compatible}}\
                          { {}                 {}                                   {options for simulating with <cpu> <gpu> or <both> are provided}}\
++                        { {}                 {(geometric|arithmetic|lb)}          {Generate missing LJ parameters with geometric,}}\
++                        { {}                 {}                                   {arithmetic, or Lorentz-Berthelot rules}}\
                      }
+
 
     cgCon -info "usage: cg <command> \[args...\] <flags>"
     cgCon -info "Note: by default, cgit works on all atoms in the top molecule"

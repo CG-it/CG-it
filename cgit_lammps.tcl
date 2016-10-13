@@ -21,7 +21,7 @@ proc CGit::writelammpsdata {molid fname {style full}} {
     topo -molid $molid writelammpsdata $fname $style
 }
 
-proc CGit::readlammpsdata {fname {style full} {guess 0}} {
+proc CGit::readlammpsdata {fname {style full} {guess ""}} {
 
   ## Read the topology file and do the best we can assigning 
   ## atom names to the molecules. There are a lot of assumptions:
@@ -35,6 +35,11 @@ proc CGit::readlammpsdata {fname {style full} {guess 0}} {
   set molid [topo readlammpsdata $fname $style]
 
   if {$guess} {
+
+    if { ${guess} == "1" } {
+      # default to geometric combination of both epsilon and sigma
+      set guess "geometric"
+    }
 
     ## Get list of residues, and their numbers
     set sel      [atomselect $molid "all"] 
@@ -75,9 +80,14 @@ proc CGit::readlammpsdata {fname {style full} {guess 0}} {
 # | Write out a lammps formatted parameter file |
 # +---------------------------------------------+
 
-proc CGit::writelammpsparam {molid fname {flag none} {guess 0}} {
+proc CGit::writelammpsparam {molid fname {flag none} {guess ""}} {
 
     variable params
+
+    if { ${guess} == "1" } {
+      # default to geometric combination of both epsilon and sigma
+      set guess "geometric"
+    }
 
     ## Conveniently, Topotools enumerates
     ## all the bond, angle, dihedral types etc..
@@ -168,15 +178,14 @@ proc CGit::writelammpsparam {molid fname {flag none} {guess 0}} {
 
             ## Check if we have any missing parameters
             if {$potential == "" || $epsilon == "" || $sigma == ""} {
-		if {$guess} {
-		    cgCon -warn "Assigning parameters for $atype1 $atype2 via combining rules"
-		    set p [pairCombine $atype1 $atype2 geometric]; dict with p {}
-		} else {
-		    cgCon -warn "Missing non-bonding parameters for $atype1 $atype2"
-		    continue
-		}
+                if { [string length ${guess}] > 0 } {
+                    cgCon -warn "Assigning parameters for $atype1 $atype2 via \"${guess}\" combination rules"
+                    set p [pairCombine $atype1 $atype2 ${guess}]; dict with p {}
+                } else {
+                    cgCon -warn "Missing non-bonding parameters for $atype1 $atype2"
+                    continue
+                }
             }
-
             puts $fid [format "pair_coeff  %4.0f  %4.0f  %7s  %8.4f  %8.4f \# %s %s"\
                            $lookup($atype1) $lookup($atype2) $potential\
                            $epsilon $sigma $atype1 $atype2]
@@ -253,13 +262,13 @@ proc CGit::writelammpsparam {molid fname {flag none} {guess 0}} {
 
             ## Check if we have any missing parameters
             if {$potential == "" || $epsilon == "" || $sigma == ""} {
-		if {$guess} {
-		    cgCon -warn "Assigning parameters for $atype1 $atype3 via combining rules"
-		    set p [pairCombine $atype1 $atype3 geometric]; dict with p {}
-		} else {
-		    cgCon -warn "Missing non-bonding parameters for $atype1 $atype2"
-		    continue
-		}
+                if { [string length ${guess}] > 0 } {
+                    cgCon -warn "Assigning parameters for $atype1 $atype3 via \"${guess}\" combination rules"
+                    set p [pairCombine $atype1 $atype3 ${guess}]; dict with p {}
+                } else {
+                    cgCon -warn "Missing non-bonding parameters for $atype1 $atype3"
+                    continue
+                }
             }
 
             set type [lsearch -ascii $angletypelist $x]
