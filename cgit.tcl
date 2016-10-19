@@ -151,8 +151,8 @@ proc CGit::usage {} {
                          { {writelammpsparam} {<filename>}                         {Write out a lammps SDK 'parameter' file containing}}\
                          { {}                 {(cpu|gpu|both)}                     {forcefield parameters required by the system. Compatible}}\
                          { {}                 {}                                   {options for simulating with <cpu> <gpu> or <both> are provided}}\
-+                        { {}                 {(geometric|arithmetic|lb)}          {Generate missing LJ parameters with geometric,}}\
-+                        { {}                 {}                                   {arithmetic, or Lorentz-Berthelot rules}}\
+                         { {}                 {(geometric|arithmetic|lb)}          {Generate missing LJ parameters with geometric,}}\
+                         { {}                 {}                                   {arithmetic, or Lorentz-Berthelot rules}}\
                      }
 
 
