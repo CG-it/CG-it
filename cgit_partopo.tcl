@@ -264,12 +264,25 @@ proc CGit::set_bonds { args } {
 
           ## Sort by chain, then by resid
           set props [lsort -index 0 [lsort -index 1 -integer $props]] 
-          set props [lrange $props 1 end]; # Remove the first element 
 
+          ## Check for bonds between residues atom indices n-n+1,
+          ## n+2-n+3
           foreach {x y} $props {
             lassign $x chainx residuex indexx
             lassign $y chainy residuey indexy
-            
+  
+            if { $chainx == $chainy &&
+                 $residuey == $residuex + 1 } {
+                   lappend topo_bondlist [list $indexx $indexy]
+            }
+          }
+
+          ## Check for bonds between residues atom indices n+1-n+2,
+          ## n+3-n+4
+          foreach {x y} [lrange $props 1 end] {
+            lassign $x chainx residuex indexx
+            lassign $y chainy residuey indexy
+  
             if { $chainx == $chainy &&
                  $residuey == $residuex + 1 } {
                    lappend topo_bondlist [list $indexx $indexy]
