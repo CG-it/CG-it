@@ -236,10 +236,19 @@ proc CGit::writelammpsparam {molid fname {flag none} {guess ""}} {
         vmdcon -warn "No angletypes found."
     } else {
 
-        ## Check if we have a unique number of angle types, if now, do a hybrid
-        set nangtypes [llength [lsort -unique [getParam angle -values -all -keys {potential} -uindex 1]]]
-        cgCon -info "System has $nangtypes unique angle potentials"
-
+        ## Check for multiple angle potential types 
+        set potentialtypes {} 
+        foreach x $angletypelist {
+            lassign [split $x "-"] atype1 atype2 atype3
+            foreach {potential k theta0} {"" "" ""} break
+            set p [getParam angle $atype1 $atype2 $atype3 -keys {potential}]
+            dict with p {}
+            lappend potentialtypes $potential
+        }
+      
+        set nangtypes [llength [lsort -unique $potentialtypes]]
+        cgCon -info "System has $nangtypes unique angle potential(s)"
+        
         foreach x $angletypelist {
 
             lassign [split $x "-"] atype1 atype2 atype3
@@ -316,7 +325,7 @@ proc CGit::writelammpsparam {molid fname {flag none} {guess ""}} {
             lassign [split $x "-"] atype1 atype2 atype3 atype4
 
             foreach {potential k n d} {"" "" "" "" ""} break
-            set p [getParam dihedral $atype1 $atype2 $atype3 -keys {potential k n d}]
+            set p [getParam dihedral $atype1 $atype2 $atype3 $atype4 -keys {potential k n d}]
             dict with p {}
 
             ## Check if we have any missing parameters

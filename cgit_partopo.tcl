@@ -259,7 +259,7 @@ proc CGit::set_bonds { args } {
           ## done, it is up to the user to make sure the correct topology is
           ## provided and subsequently checked.
           set sel2 [atomselect $molid "(name $names and resname $r) and ($seltext)"] 
-          set props [$sel get {chain resid index}]
+          set props [$sel2 get {chain resid index}]
           $sel2 delete
 
           ## Sort by chain, then by resid
@@ -390,7 +390,7 @@ proc CGit::set_angles { args } {
              
               ## Select the atoms
               set sel2 [atomselect $molid "(name $names and resname $r) and ($seltext)"]
-              set props [$sel get {name chain resid index}]
+              set props [$sel2 get {name chain resid index}]
               $sel2 delete
 
               ## Sort by chain, then by resid
@@ -563,7 +563,7 @@ proc CGit::set_dihedrals { args } {
              
               ## Select the atoms
               set sel2 [atomselect $molid "(name $names and resname $r) and ($seltext)"]
-              set props [$sel get {name chain resid index}]
+              set props [$sel2 get {name chain resid index}]
               $sel2 delete
 
               ## Sort by chain, then by resid
