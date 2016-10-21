@@ -118,6 +118,7 @@ proc CGit::writelammpsparam {molid fname {flag none} {guess ""}} {
     dict set topodict bond [topo -molid $molid bondtypenames]
     dict set topodict angle [topo -molid $molid angletypenames]
     dict set topodict dihedral [topo -molid $molid dihedraltypenames]
+    dict set topodict improper [topo -molid $molid impropertypenames]
 
     ## Lookup table to convert between types and their associated numerical id
     ## and back again. Types are number 1 to N..
@@ -324,7 +325,7 @@ proc CGit::writelammpsparam {molid fname {flag none} {guess ""}} {
 
             lassign [split $x "-"] atype1 atype2 atype3 atype4
 
-            foreach {potential k n d} {"" "" "" "" ""} break
+            foreach {potential k n d} {"" "" "" ""} break
             set p [getParam dihedral $atype1 $atype2 $atype3 $atype4 -keys {potential k n d}]
             dict with p {}
 
@@ -343,7 +344,35 @@ proc CGit::writelammpsparam {molid fname {flag none} {guess ""}} {
         }
     }
 
-    ## Impropers not supported yet
+    ## improper types
+    set impropertypelist [dict get $topodict improper]
+
+    if {$impropertypelist == {} } {
+        vmdcon -warn "No impropertypes found."
+    } else {
+
+        foreach x $impropertypelist {
+
+            lassign [split $x "-"] atype1 atype2 atype3 atype4
+
+            foreach {potential k x} {"" "" ""} break
+            set p [getParam dihedral $atype1 $atype2 $atype3 $atype4 -keys {potential k x}]
+            dict with p {}
+
+            ## Check if we have any missing parameters
+            if {$potential == "" || $k == "" || $x == ""} {
+                cgCon -warn "Missing improper parameters for $atype1 $atype2 $atype3 $atype4"
+                continue
+            }
+
+            set type [lsearch -ascii $impropertypelist $x]
+            incr type;
+
+            puts $fid [format "improper_coeff  %4.0f  %8.4f  %8.4 \# %s-%s-%s-%s"\
+                           $type $k $x \
+                           $atype1 $atype2 $atype3 $atype4]
+        }
+    }
 
     close $fid
 
@@ -390,7 +419,9 @@ proc CGit::lammps_preamble {fid {flag none}} {
     puts $fid "\#angle_style     sdk"
     puts $fid "\#angle_style     hybrid sdk harmonic"
     puts $fid "\#dihedral_style  charmm"
+    puts $fid "\#improper_style  harmonic"
     puts $fid "\#special_bonds   lj/coul 0.0 0.0 1.0\n"
+
 }
 
 

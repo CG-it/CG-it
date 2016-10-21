@@ -28,7 +28,7 @@ namespace eval ::CGit:: {
     ## Valid cgit commands
 
     variable validcmd {readtop readparam reanalyzemol setbonds
-        setangles setdihedrals reset clear readlammpsdata writelammpsdata 
+        setangles setdihedrals setimpropers reset clear readlammpsdata writelammpsdata 
         writelammpsparam writesdktopo writetop setbondparam setangleparam 
         setpairparam deletebondparam deleteangleparam deletepairparam getbondparam
         getangleparam getpairparam readmap map maptrajectory maptraj
@@ -133,7 +133,7 @@ proc CGit::usage {} {
 
     set groups(5) "Molecule Preparation:"
     set commands(5) {\
-                         {  {set(bonds|angles|dihedrals)} {}          {Apply bonding/angle connectivities specified from}}\
+                         {  {set(bonds|angles|dihedrals|impropers)} {} {Apply bonding/angle connectivities specified from}}\
                          {  {}               {}                        {topologies/maps to selected atoms.}}\
                          {  {reanalyzemol}   {}                        {Apply [<mass> <charge> <index> <type> <all> <none>] properties}}\
                          {  {}               {}                        {from topologies to selected atoms and retype}}\
@@ -382,6 +382,13 @@ proc CGit::CGit { args } {
             if {$sel == "" || $molid < 0} {return [usage]}
             set_dihedrals $sel
         }
+
+        setimproper -
+        setimpropers {
+            if {$sel == "" || $molid < 0} {return [usage]}
+            set_impropers $sel {*}$newargs
+        }
+
 
         reanalyzemol {
             if {$sel == "" || $molid < 0} {return [usage]}

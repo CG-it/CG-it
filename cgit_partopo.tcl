@@ -532,7 +532,7 @@ proc CGit::set_dihedrals { args } {
                 set index [$sel2 get index]
 
                 ## Isolate each atom, loop over in parallel, this assumes that all atoms
-                ## are order the same in each residue.
+                ## are ordered the same in each residue.
                 set a1 [lsearch -exact -all $name [lindex $tuple 0]]
                 set a2 [lsearch -exact -all $name [lindex $tuple 1]]
                 set a3 [lsearch -exact -all $name [lindex $tuple 2]]
@@ -666,6 +666,98 @@ proc CGit::set_dihedrals { args } {
     return -code ok $sys(OK)
 }
 
+proc CGit::set_impropers { args } {
+
+    variable map
+    variable sys
+
+    lassign $args sel tol
+
+    set molid [$sel molid]
+    set seltext [$sel text]
+
+    if {$tol == ""} {set tol 180.0} ; # Is this the correct default tol? 
+
+    ## Delete all the impropers in the selection
+    topo -sel $sel clearimpropers
+
+    ## Get unique residue types
+    set resnames [lsort -unique [$sel get resname]]
+
+    set sdk_improperlist {}
+    set topo_improperlist {}
+    foreach r $resnames {
+
+        if {[catch {dict get $map $r impropers} sdk_improperlist]} {
+            continue
+        }
+
+        ## Make sure we actually have the impropers defined
+        ## and not just an empty list. If the topology
+        ## specifies "none" skip it, or guess if "auto"
+        if { [lsearch $sdk_improperlist "*none*"] >= 0 ||
+             [llength $sdk_improperlist] == 0} {continue}
+
+        ## Guess the impropers if we can
+        if {  [lsearch $sdk_improperlist "*auto*"] >= 0 } {
+            ## Guess impropers and store them
+            set sel2 [atomselect $molid "($seltext) and resname $r"]
+            puts "guessing impropers using topotools for residue $r"
+            topo -sel $sel2 guessimpropers tolerance $tol
+            set topo_improperlist [concat $topo_improperlist\
+                                       [topo -sel $sel2 getimproperlist]]
+            $sel2 delete
+        } else {
+
+            ## Loop over all atom tuples.
+            foreach tuple $sdk_improperlist {
+
+                if {[llength $tuple] != 4} {
+                    cgCon -warn "bad improper definition: $tuple"
+                }
+
+                ## Order here is important! With bonding it doesn't
+                ## matter, but we need to be careful and not mess up
+                ## the order for impropers if the atoms read in by the
+                ## user aren't commensurate with the improper list.
+                set sel2 [atomselect $molid "(name $tuple and resname $r) and ($seltext)"]
+                set name [$sel2 get name]; set index [$sel2 get index]
+
+                ## Isolate each atom, loop over in parallel, this assumes that all atoms
+                ## are ordered the same in each residue.
+                set a1 [lsearch -exact -all $name [lindex $tuple 0]]
+                set a2 [lsearch -exact -all $name [lindex $tuple 1]]
+                set a3 [lsearch -exact -all $name [lindex $tuple 2]]
+                set a4 [lsearch -exact -all $name [lindex $tuple 3]]
+
+                if {[llength $a1] != [llength $a2] ||
+                    [llength $a1] != [llength $a3] ||
+                    [llength $a1] != [llength $a4]} {
+                    cgCon -err "Missing atoms for improper $tuple for residue type $r or bad atom name"
+                }
+
+                foreach id1 $a1 id2 $a2 id3 $a3 id4 $a4 {
+                    lappend topo_improperlist [list "UNK-UNK-UNK-UNK"\
+                                                   [lindex $index $id1]\
+                                                   [lindex $index $id2]\
+                                                   [lindex $index $id3]\
+                                                   [lindex $index $id4]]
+                }
+
+                ## Cleanup selection
+                $sel2 delete
+           }
+         }
+       }
+
+    ## Set improper list and retype
+    topo -sel $sel setimproperlist $topo_improperlist
+    topo -sel $sel retypeimpropers
+
+    return -code ok $sys(OK)
+}
+
+
 ## Print out a nice formatted database of values in plain-text
 proc CGit::printParam {{fname {stdout}}} {
 
@@ -798,6 +890,23 @@ proc CGit::getParam {args} {
             if {$retval == {}} {
                 set retval [dict filter $params value\
                                 "*dihedral*\{$t4 $t3 $t2 $t1\}*"]
+            }
+        }
+
+        impr -
+        improper {
+
+            lassign $newargs t1 t2 t3 t4
+            if {$t1 == {}} {set t1 "*"}
+            if {$t2 == {}} {set t2 "*"}
+            if {$t3 == {}} {set t3 "*"}
+            if {$t4 == {}} {set t4 "*"}
+
+            set retval [dict filter $params value\
+                            "*improper*\{$t1 $t2 $t3 $t4\}*"]
+            if {$retval == {}} {
+                set retval [dict filter $params value\
+                                "*improper*\{$t4 $t3 $t2 $t1\}*"]
             }
         }
 
