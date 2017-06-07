@@ -2,9 +2,7 @@
 
 CG-it is a VMD package to simplify creating coarse grained (CG) topologies for molecular dynamics simulations.  It currently supports CG force fields that follow the "SDK" parameterization procedure from Shinoda et al, Mol Sim, 33:27-36 (2007)
 
-Developed by Chris MacDermaid <chris.macdermaid@gmail.com> and Giacomo Fiorin <giacomo.fiorin@gmail.com>
-
-Special thanks to Axel Kohlmeyer for advice and writing [TopoTools](https://github.com/akohlmey/topotools)
+CG-it was developed by Chris MacDermaid <chris.macdermaid@gmail.com> and Giacomo Fiorin <giacomo.fiorin@gmail.com>.  Special thanks to Axel Kohlmeyer for advice and writing [TopoTools](https://github.com/akohlmey/topotools).  CG-it is available under the GNU General Public License (see COPYING for details).
 
 ## Install
 1. From the main package directory, issue `make install` to compile and copy the relevant files to `${HOME}/.vmdplugins/` folder.

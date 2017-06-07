@@ -1,17 +1,13 @@
-# +----------+
-# | CG-it    |
-# +----------+
+# +-------+
+# | CG-it |
+# +-------+
 
-# CGit, a VMD package to simplify creating coarse grained SDK
-# topologies.
+# CGit, a VMD package to simplify creating coarse grained systems.
 
 # Copyright (c) 2013 by Chris MacDermaid <chris.macdermaid@gmail.com>
 # and Giacomo Fiorin <giacomo.fiorin@gmail.com>
 
-#(Shinoda) Shinoda, DeVane, Klein, Mol Sim, 33, 27 (2007).
-#(DeVane) Shinoda, DeVane, Klein, Soft Matter, 4, 2453-2462 (2008).
-
-#    This program (CGTools) is free software: you can redistribute it and/or modify
+#    This program (CG-it) is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
