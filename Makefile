@@ -12,7 +12,7 @@ print-%: ; @echo $*=$($*)
 all: libcgmap.so
 
 ## Install everything from .rsync-include
-install:
+install: all
 	mkdir -p ${HOME}/.vmdplugins/cgit${VERSION} 2>/dev/null || :
 	rsync -av --include-from=.rsync-include --exclude="*" . ${HOME}/.vmdplugins/cgit${VERSION}/.
 	cd cgmap; make install "VERSION=$(VERSION)"
